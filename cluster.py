@@ -38,7 +38,7 @@ class SubNet(object):
         self.net_id = net_id
         self.cidr = '10.0.0.0/24'
         self.dns = ['141.142.2.2', '141.142.230.144']
-        self.body = {'name':self.name, 'network_id': self.net_id,'cidr': self.cidr,'ip_version':'4', 'dns_nameservers' = self.dns}
+        self.body = {'name':self.name, 'network_id': self.net_id,'cidr': self.cidr,'ip_version':'4', 'dns_nameservers': self.dns}
         if create:
             self.neutron.create_subnet({'subnet':self.body  })
         self.id = self.neutron.list_subnets(name=self.name)['subnets'][0]['id']
@@ -97,7 +97,7 @@ class ClusterNet(object):
 
 if __name__=='__main__':
     nova, neu = init()
-    name = 'mck'
+    name = 'DES-net'
     im = nova.images.find(name="Ubuntu 16.04")
     fl = nova.flavors.find(name="m1.medium")
     try:
@@ -112,12 +112,12 @@ if __name__=='__main__':
     nova.keypairs.create(name='k_keys',public_key=pub)
     k = nova.keypairs.find(name='k_keys')
     
-    C = ClusterNet(neu, name)
+    #C = ClusterNet(neu, name)
     try:
         net = nova.networks.find(label=name)
-        C.get()
+        #C.get()
     except:
-        C.create()
+        #C.create()
         net = nova.networks.find(label=name)
     
     sec = nova.security_groups.find(name='kubenet_sec')
@@ -129,7 +129,7 @@ if __name__=='__main__':
         ip = nova.floating_ips.create(nova.floating_ip_pools.list()[0].name)
 
     nova.servers.create(
-            name='kcc',
+            name='kb',
             image=im.id,
             flavor=fl.id,
             key_name=k.name,

@@ -3,8 +3,8 @@ import time
 import socket
 
 env.user = 'ubuntu'
-env.hosts = ['my_server']
-env.key_filename = 'k_keys.key'
+env.hosts = ['141.142.211.28']
+env.key_filename = '/Users/Matias/test_kubernetes/kube_nebula/k_keys.key'
 
 def set_up():
     put('script.sh')
