@@ -1,0 +1,14 @@
+---
+- hosts: master
+  remote_user: 'ubuntu'
+  become: yes
+  become_method: sudo
+  gather_facts: False
+  tasks:
+    - name: apt-get update 
+      raw: apt-get update 
+    - name: Install python 2.7 
+      raw: apt install -y python-minimal
+    - name: update host
+      command: /bin/sed -i "s/127.0.0.1 localhost/127.0.0.1 localhost $HOSTNAME/g" /etc/hosts
+    - copy: src=script.sh dest=/home/ubuntu/
