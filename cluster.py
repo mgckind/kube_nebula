@@ -1,23 +1,31 @@
+#!/usr/bin/env python
+from __future__ import print_function
 from novaclient import client
 from keystoneclient.auth.identity import v2
 from keystoneclient import session 
 from neutronclient.v2_0 import client as nclient
 import time
-import os
+import os,sys
+import argparse
+import uuid
 
-def init():
-    Credentials = {}
-    Credentials['username']  = os.environ['OS_USERNAME']
-    Credentials['password']  = os.environ['OS_PASSWORD']
-    Credentials['auth_url']  = os.environ['OS_AUTH_URL']
-    Credentials['tenant_id'] = os.environ['OS_TENANT_ID']
+
+def get_session():
+    credentials = {}
+    credentials['username']  = os.environ['OS_USERNAME']
+    credentials['password']  = os.environ['OS_PASSWORD']
+    credentials['auth_url']  = os.environ['OS_AUTH_URL']
+    credentials['tenant_id'] = os.environ['OS_TENANT_ID']
     
-    auth    = v2.Password(**Credentials)
+    auth    = v2.Password(**credentials)
     my_session = session.Session(auth=auth)
-    nova = client.Client("2", session=my_session)
-    neutron = nclient.Client(session=my_session)
-    return nova, neutron
+    return my_session
 
+def init_nova():
+    return client.Client("2", session=get_session())
+
+def init_neutron():
+    return nclient.Client(session=get_session())
 
 class Network(object):
     def __init__(self, neutron,name, create=True):
@@ -95,45 +103,73 @@ class ClusterNet(object):
         self.Network.delete()
 
 
+
+
+
 if __name__=='__main__':
-    nova, neu = init()
-    name = 'DES-net'
+    parser = argparse.ArgumentParser(description='Create Kubernetes cluster in Openstack')
+    parser.add_argument('network', type=str, help="NETWORK name")
+    parser.add_argument('--add-node', '-an', dest='add_node', action='store_true', help="Add an extra node to the NETWORK")
+    parser.add_argument('--node-name', '-nn', dest='node_name', type=str, default=None, help="Node name (default: random)")
+    parser.add_argument('--create-network', dest='new_net', action='store_true', help="Create a new NETWORK")
+    parser.add_argument('--delete-network', dest='del_net', action='store_true', help="Delet a NETWORK")
+    args = parser.parse_args()
+    nova = init_nova()
+    name = args.network
+    if args.node_name is not None:
+        node_name = args.node_name
+    else:
+        node_name = name+'-'+uuid.uuid4().hex[0:6]
+
+
     im = nova.images.find(name="Ubuntu 16.04")
     fl = nova.flavors.find(name="m1.medium")
+    sec = nova.security_groups.find(name='kubenet_sec')
+    
     try:
         k = nova.keypairs.find(name='k_keys')
-        k.delete()
-        print('deleting key')
+        #k.delete()
+        #print('deleting key')
     except:
-        pass
+        print('creating a new key')
+        with open('k_keys.key.pub','r') as f: pub=f.read()
+        nova.keypairs.create(name='k_keys',public_key=pub)
 
-    print('creating a new key')
-    with open('k_keys.key.pub','r') as f: pub=f.read()
-    nova.keypairs.create(name='k_keys',public_key=pub)
+
+
     k = nova.keypairs.find(name='k_keys')
     
-    #C = ClusterNet(neu, name)
+    C = ClusterNet(init_neutron(), name)
     try:
         net = nova.networks.find(label=name)
-        #C.get()
+        C.get()
+        if args.del_net:
+            C.delete()
+            print('\nNetwork {} was deleted\n'.format(name))
+            sys.exit(0)
     except:
-        #C.create()
-        net = nova.networks.find(label=name)
+        if not args.new_net:
+            print('\nNetwork {} does not exists. Add --create-network to create a new one\n'.format(name))
+            sys.exit(0)
+        else:
+            C.create()
     
-    sec = nova.security_groups.find(name='kubenet_sec')
-
-
+    net = nova.networks.find(label=name)
+    
     try:
         ip = nova.floating_ips.findall(instance_id=None)[0]
     except:
         ip = nova.floating_ips.create(nova.floating_ip_pools.list()[0].name)
 
-    nova.servers.create(
-            name='kb',
-            image=im.id,
-            flavor=fl.id,
-            key_name=k.name,
-            security_groups = [sec.id],
-            nics = [{'net-id':net.id}],
-            min_count = 1,
-            )
+
+    if args.add_node:
+        print('\nAdding node {0} to network {1} \n'.format(node_name, name))
+        nova.servers.create(
+                name=node_name,
+                image=im.id,
+                flavor=fl.id,
+                key_name=k.name,
+                security_groups = [sec.id],
+                nics = [{'net-id':net.id}],
+                min_count = 1,
+                )
