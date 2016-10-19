@@ -1,10 +1,14 @@
 ---
-- hosts: master
+- hosts: slaves
   remote_user: 'ubuntu'
   become: yes
   become_method: sudo
   gather_facts: False
   tasks:
+    - name: apt-get update 
+      raw: apt-get update
+    - name: Install python 2.7
+      raw:  apt install -y python-minimal
     - name: Adding ansible repo
       raw: apt-add-repository -y ppa:ansible/ansible
     - name: curls
@@ -23,13 +27,3 @@
          - kubeadm 
          - kubectl 
          - kubernetes-cni
-    - name: Update host
-      lineinfile: dest=/etc/hosts regexp='^127\.0\.0\.1' line="127.0.0.1 localhost {{ local_host }}"
-    - name: Update host with nodes
-      lineinfile: dest=/etc/hosts line="{{ item.ip }} {{ item.name }}"
-      with_items: "{{ nodes }}"
-    - copy: src=inventory.conf dest=/home/ubuntu/mykube/
-    - name: Copy keypair
-      copy: src={{ key }} dest=/home/ubuntu/mykube/
-    - name: Copy slave.yml
-      copy: src=slave.yml dest=/home/ubuntu/mykube/
