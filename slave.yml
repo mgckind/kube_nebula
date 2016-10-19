@@ -27,3 +27,5 @@
          - kubeadm 
          - kubectl 
          - kubernetes-cni
+    - name: Run kubeadm join
+      command: /usr/bin/kubeadm join --token "{{ token }}" "{{ master_ip }}" 
