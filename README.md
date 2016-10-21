@@ -16,6 +16,7 @@ It only works in python 2 given that ansible is not fully python 3 compatible. A
 
 The file [config_nodes.yml](config_nodes.yml) has the initial configuration given OpenStack resources. This also includes the name of the key, if not in current working directory a ssh keipair will be created and upload to the server. 
 
+### Command Examples
 
 #### Create network
 
