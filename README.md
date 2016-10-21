@@ -44,7 +44,7 @@ The file [config_nodes.yml](config_nodes.yml) has the initial configuration give
 
 #### Custon names for the nodes
     
-    By default the master will have the name <my_net>-master and the nodes will have <my_net>-<random>, you can specify the names for the node with the flag --node-name <custom-name>
+By default the master will have the name <my_net>-master and the nodes will have <my_net>-<random>, you can specify the names for the node with the flag --node-name <custom-name>
 
 #### Delete cluster in network
     
