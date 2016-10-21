@@ -34,8 +34,9 @@ def create_inventory(m_public='', m_local='', m_name='', key='', token='', nodes
         config.set('master:vars', 'nodes', str([{"ip":row[0], "name":row[1]} for row in nodes]
 ))
     
-    if not config.has_section('slaves'):
-        config.remove_section('slaves')
+    if config.has_section('slaves'):
+        for item in config.options('slaves'):
+            config.remove_option('slaves',item)
     if not config.has_section('slaves'):
         config.add_section('slaves')
     if nodes is not None:
