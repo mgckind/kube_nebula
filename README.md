@@ -6,6 +6,7 @@ Simple commands to install and control a kuberneter cluster in Openstack
 
 It only works in python 2 given that ansible is not fully python 3 compatible. All packages below are pip installables.
 
+- [PyYAML](http://pyyaml.org/wiki/PyYAML)
 - [python-novaclient](https://github.com/openstack/python-novaclient)
 - [python-neutronclient](https://github.com/openstack/python-neutronclient)
 - [python-keystoneclient](https://github.com/openstack/python-keystoneclient)

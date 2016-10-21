@@ -60,3 +60,30 @@ def create_inventory(m_public='', m_local='', m_name='', key='', token='', nodes
     
     with open(configfile,'w') as f:
         config.write(f)
+
+
+def get_master_ip():
+    configfile = 'inventory.conf'
+    config = configparser.RawConfigParser(allow_no_value=True)
+    check = config.read(configfile)
+    return config.items('master')[0][0]
+
+
+def update_inventory():
+    configfile = 'inventory.conf'
+    config = configparser.RawConfigParser(allow_no_value=True)
+    check = config.read(configfile)
+    old_nodes = config.items('slaves')
+    if not config.has_section('slaves-done'):
+        config.add_section('slaves-done')
+    for option,value in old_nodes:
+        config.set('slaves-done',option)
+    config.remove_section('slaves')
+    config.set('all:vars', 'kube_basics', 'false')
+    config.set('all:vars', 'kube_init', 'false')
+    config.set('all:vars', 'master_basics', 'false')
+    with open(configfile,'w') as f:
+        config.write(f)
+    return
+
+

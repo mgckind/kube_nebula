@@ -6,23 +6,46 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.vars import VariableManager
 from ansible.inventory import Inventory
 from ansible.executor.playbook_executor import PlaybookExecutor
+import yaml
+import inventory
 
-variable_manager = VariableManager()
-loader = DataLoader()
-passwords = {}
 
-inventory = Inventory(loader=loader, variable_manager=variable_manager,  host_list='inventory.conf')
-playbook_path = 'master.yml'
+def run_playbook():
+    import inventory as inventory
+    master_public = inventory.get_master_ip()
+    for i in range(1000):
+        check = 0 #os.system("ping -c 1 "+master_public)
+        if check == 0:
+            os.system('ssh-keygen -R {}'.format(master_public))
+            os.system('ssh-keyscan -H {} >> ~/.ssh/known_hosts'.format(master_public))
+            break
+        if check != 0:
+            print('\nHostname {} is not up!\n'.format(master_public))
+            sys.exit()
 
-Options = namedtuple('Options', ['listtags', 'listtasks', 'listhosts', 'syntax', 'connection','module_path', 'forks', 'remote_user', 'private_key_file', 'ssh_common_args', 'ssh_extra_args', 'sftp_extra_args', 'scp_extra_args', 'become', 'become_method', 'become_user', 'verbosity', 'check'])
+    
+    variable_manager = VariableManager()
+    loader = DataLoader()
+    passwords = {}
 
-options = Options(listtags=False, listtasks=False, listhosts=False, syntax=False, connection='ssh', module_path=None, forks=100, remote_user='slotlocker', private_key_file='k_keys.key', ssh_common_args=None, ssh_extra_args=None, sftp_extra_args=None, scp_extra_args=None, become=True, become_method=None, become_user='root', verbosity=None, check=False)
+    inventory = Inventory(loader=loader, variable_manager=variable_manager,  host_list='inventory.conf')
+    playbook_path = 'master.yml'
 
-variable_manager.set_inventory(inventory)
+    with open('config_nodes.yml') as f:
+        conf = yaml.load(f)
+    mykey = conf['master']['key']+'.key'
 
-pbex = PlaybookExecutor(playbooks=[playbook_path], inventory=inventory, variable_manager=variable_manager, loader=loader, options=options, passwords=passwords)
+    Options = namedtuple('Options', ['listtags', 'listtasks', 'listhosts', 'syntax', 'connection','module_path', 'forks', 'remote_user', 'private_key_file', 'ssh_common_args', 'ssh_extra_args', 'sftp_extra_args', 'scp_extra_args', 'become', 'become_method', 'become_user', 'verbosity', 'check'])
 
-results = pbex.run()
+    options = Options(listtags=False, listtasks=False, listhosts=False, syntax=False, connection='ssh', module_path=None, forks=100, remote_user='slotlocker', private_key_file=mykey, ssh_common_args=None, ssh_extra_args=None, sftp_extra_args=None, scp_extra_args=None, become=True, become_method=None, become_user='root', verbosity=None, check=False)
+
+    variable_manager.set_inventory(inventory)
+
+    pbex = PlaybookExecutor(playbooks=[playbook_path], inventory=inventory, variable_manager=variable_manager, loader=loader, options=options, passwords=passwords)
+
+    results = pbex.run()
+
+    return results
 
 
 

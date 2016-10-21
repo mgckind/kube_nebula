@@ -10,6 +10,8 @@ import uuid
 import time
 from ostack import *
 import inventory
+import yaml
+import pbook
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Create Kubernetes cluster in Openstack')
@@ -21,27 +23,30 @@ if __name__=='__main__':
     parser.add_argument('--create-network', dest='new_net', action='store_true', help="Create a new NETWORK")
     parser.add_argument('--delete-network', dest='del_net', action='store_true', help="Delete a NETWORK")
     parser.add_argument('--delete-cluster', dest='del_cl', action='store_true', help="Delete a cluster inside NETWORK")
+    parser.add_argument('--run_ansible','-run', dest='run_ansible', action='store_true', help="Run Ansible playbook on master node")
     parser.add_argument('--force', action='store_true', help="Force delete")
     args = parser.parse_args()
     nova = init_nova()
     name = args.network
 
-    im = nova.images.find(name="Ubuntu 16.04")
-    fl = nova.flavors.find(name="m1.medium")
-    sec = nova.security_groups.find(name='kubenet_sec')
+    with open('config_nodes.yml') as f:
+        config_nodes = yaml.load(f)
+
+    key_root = config_nodes['master']['key']
+
+
+    if not os.path.exists(key_root+'.key'):
+        os.system("ssh-keygen -f {} -t rsa -N ''".format(key_root+'.key'))
+    
     try:
-        ip = nova.floating_ips.findall(instance_id=None)[0]
-    except:
-        ip = nova.floating_ips.create(nova.floating_ip_pools.list()[0].name) 
-    try:
-        k = nova.keypairs.find(name='k_keys')
+        k = nova.keypairs.find(name=key_root)
         #k.delete()
         #print('deleting key')
     except:
         print('creating a new key')
-        with open('k_keys.key.pub','r') as f: pub=f.read()
-        nova.keypairs.create(name='k_keys',public_key=pub)
-    k = nova.keypairs.find(name='k_keys')
+        with open(key_root+'.key.pub','r') as f: pub=f.read()
+        nova.keypairs.create(name=key_root,public_key=pub)
+    k = nova.keypairs.find(name=key_root)
     
     C = ClusterNet(init_neutron(), name)
     try:
@@ -71,20 +76,24 @@ if __name__=='__main__':
     
     inventory_dict = {'kube_stop' : 'false'}
     if args.master:
+        try:
+            ip = nova.floating_ips.findall(instance_id=None)[0]
+        except:
+            ip = nova.floating_ips.create(nova.floating_ip_pools.list()[0].name)
         inventory_dict['master_basics'] = 'true'
         inventory_dict['kube_init'] = 'true'
         inventory_dict['kube_basics'] = 'true'
         node_name = name+'-master'
         print('\nAdding node {0} to network {1} \n'.format(node_name, name))
         server=nova.servers.create(
-                        name=node_name,
-                        image=im.id,
-                        flavor=fl.id,
-                        key_name=k.name,
-                        security_groups = [sec.id],
-                        nics = [{'net-id':net.id}],
-                        min_count = 1,
-                        )
+                name=node_name,
+                image=nova.images.find(name=config_nodes['master']['image']).id,
+                flavor=nova.flavors.find(name=config_nodes['master']['flavor']).id,
+                key_name=k.name,
+                security_groups = [nova.security_groups.find(name=config_nodes['master']['security']).id],
+                nics = [{'net-id':net.id}],
+                min_count = 1,
+                )
         print(server.id)
         for i in range(20):
             time.sleep(1)
@@ -106,8 +115,6 @@ if __name__=='__main__':
         master_public = server.networks[name][1]
         master_name = node_name
         token = uuid.uuid4().hex[0:6]+'.'+uuid.uuid4().hex[0:16]
-        os.system('ssh-keygen -R {}'.format(master_public))
-        #os.system('ssh-keyscan -H {} >> ~/.ssh/known_hosts'.format(master_public))
 
     all_nodes = None
     if args.add_node:
@@ -123,14 +130,14 @@ if __name__=='__main__':
 
             print('\nAdding node {0} to network {1} \n'.format(node_name, name))
             server=nova.servers.create(
-                        name=node_name,
-                        image=im.id,
-                        flavor=fl.id,
-                        key_name=k.name,
-                        security_groups = [sec.id],
-                        nics = [{'net-id':net.id}],
-                        min_count = 1,
-                        )
+                name=node_name,
+                image=nova.images.find(name=config_nodes['nodes']['image']).id,
+                flavor=nova.flavors.find(name=config_nodes['nodes']['flavor']).id,
+                key_name=k.name,
+                security_groups = [nova.security_groups.find(name=config_nodes['nodes']['security']).id],
+                nics = [{'net-id':net.id}],
+                min_count = 1,
+                    )
             print(server.id)
             for i in range(20):
                 time.sleep(1)
@@ -152,10 +159,24 @@ if __name__=='__main__':
             m_public=master_public, 
             m_local=master_local, 
             m_name=master_name, 
-            key='k_keys.key', 
+            key=key_root+'.key', 
             token=token,
             nodes=all_nodes,
             **inventory_dict)
+
+    if args.run_ansible:
+        if args.master:
+            for i in range(1000):
+                check = os.system("ping -c 1 "+master_public)
+                if check == 0:
+                    os.system('ssh-keygen -R {}'.format(master_public))
+                    os.system('ssh-keyscan -H {} >> ~/.ssh/known_hosts'.format(master_public))
+                    break
+            if check != 0:
+                print('\nHostname {} is not up!\n'.format(master_public))
+        res = pbook.run_playbook()
+        if res == 0:
+            inventory.update_inventory()
 
         
 
