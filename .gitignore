@@ -1,0 +1,6 @@
+*.pyc
+*.retry
+*.conf
+*.key
+*.key.pub
+*.sh

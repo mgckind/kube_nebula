@@ -1,0 +1,9 @@
+---
+- name: Copy inventory
+  copy: src=inventory.conf dest=/home/ubuntu/mykube/
+- name: Copy keypair
+  copy: src={{ key }} dest=/home/ubuntu/mykube/ mode=600
+- name: Copy slave.yml
+  copy: src=slave.yml dest=/home/ubuntu/mykube/
+- name: Copy tasks
+  copy: src=tasks/ dest=/home/ubuntu/mykube/tasks/

@@ -1,0 +1,22 @@
+---
+- name: apt-get update 
+  raw: apt-get update
+- name: Install python 2.7
+  raw:  apt install -y python-minimal
+- name: Adding ansible repo
+  raw: apt-add-repository -y ppa:ansible/ansible
+- name: curls
+  raw: curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+- name: adding sources
+  lineinfile: create=yes dest=/etc/apt/sources.list.d/kubernetes.list line="deb http://apt.kubernetes.io/ kubernetes-xenial main" 
+- name: apt-get update 
+  raw: apt-get update
+- name: Install kubadm and related packages
+  apt: pkg={{ item }} state=installed
+  with_items:
+     - ansible
+     - docker.io
+     - kubelet 
+     - kubeadm 
+     - kubectl 
+     - kubernetes-cni
