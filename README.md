@@ -12,27 +12,44 @@ It only works in python 2 given that ansible is not fully python 3 compatible. A
 - [python-keystoneclient](https://github.com/openstack/python-keystoneclient)
 - [ansible](http://docs.ansible.com/ansible/)
 
-### Create network
+### Configuration
+
+The file [config_nodes.yml](config_nodes.yml) has the initial configuration given OpenStack resources. This also includes the name of the key, if not in current working directory a ssh keipair will be created and upload to the server. 
+
+
+#### Create network
 
     python admin_cluster.py <my_net> --create-network
 
-### Create master
+#### Create master
     
     python admin_cluster.py <my_net> --master
 
-### Add nodes
+#### Add nodes
 
     python admin_cluster.py <my_net> --add-node --multiple <number>
 
-### All at once
+#### All at once
     
     python admin_cluster.py <my_net> --create-network --master --add-node --multiple <number>
 
-### Delete cluster in network
+#### To run ansible using same script add --run-ansible or -run at the end, this will run the playbook on master
+
+     python admin_cluster.py <my_net> -run
+
+#### To set up a cluster of 5 nodes in one command
+
+    python admin_cluster.py <my_net> --create-network --master --add-node --multiple 4 -run
+
+#### Custon names for the nodes
+    
+    By default the master will have the name <my_net>-master and the nodes will have <my_net>-<random>, you can specify the names for the node with the flag --node-name <custom-name>
+
+#### Delete cluster in network
     
     python admin_cluster.py <my_net> --delete-cluster --force
 
-### Delete network 
+#### Delete network 
     
     python admin_cluster.py <my_net> --delete-network --force
 

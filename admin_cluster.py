@@ -23,7 +23,7 @@ if __name__=='__main__':
     parser.add_argument('--create-network', dest='new_net', action='store_true', help="Create a new NETWORK")
     parser.add_argument('--delete-network', dest='del_net', action='store_true', help="Delete a NETWORK")
     parser.add_argument('--delete-cluster', dest='del_cl', action='store_true', help="Delete a cluster inside NETWORK")
-    parser.add_argument('--run_ansible','-run', dest='run_ansible', action='store_true', help="Run Ansible playbook on master node")
+    parser.add_argument('--run-ansible','-run', dest='run_ansible', action='store_true', help="Run Ansible playbook on master node")
     parser.add_argument('--force', action='store_true', help="Force delete")
     args = parser.parse_args()
     nova = init_nova()
@@ -57,6 +57,7 @@ if __name__=='__main__':
         C.get()
         if args.del_cl or args.del_net:
             if args.force:
+                os.remove('inventory.conf')
                 for server in nova.servers.findall():
                     if server.interface_list()[0].net_id == net.id:
                         server.delete()
@@ -168,15 +169,6 @@ if __name__=='__main__':
             **inventory_dict)
 
     if args.run_ansible:
-        if args.master:
-            for i in range(1000):
-                check = os.system("ping -c 1 "+master_public)
-                if check == 0:
-                    os.system('ssh-keygen -R {}'.format(master_public))
-                    os.system('ssh-keyscan -H {} >> ~/.ssh/known_hosts'.format(master_public))
-                    break
-            if check != 0:
-                print('\nHostname {} is not up!\n'.format(master_public))
         res = pbook.run_playbook()
         if res == 0:
             inventory.update_inventory()

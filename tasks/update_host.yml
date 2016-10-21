@@ -4,6 +4,9 @@
 - name: Update /etc/hosts with nodes
   lineinfile: dest=/etc/hosts line="{{ item.ip }} {{ item.name }}"
   with_items: "{{ nodes }}"
+- name: Remove nodes to known_hosts for ssh
+  raw: ssh-keygen -R "{{ item.name }}"
+  with_items: "{{ nodes }}"
 - name: Add nodes to known_hosts for ssh
   raw: ssh-keyscan -H "{{ item.name }}"  | tee --append /root/.ssh/known_hosts
   with_items: "{{ nodes }}"
