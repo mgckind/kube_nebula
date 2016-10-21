@@ -69,9 +69,11 @@ if __name__=='__main__':
     
     net = nova.networks.find(label=name)
     
-    inventory_dict = {}
+    inventory_dict = {'kube_stop' : 'false'}
     if args.master:
-        args.multiple = 1
+        inventory_dict['master_basics'] = 'true'
+        inventory_dict['kube_init'] = 'true'
+        inventory_dict['kube_basics'] = 'true'
         node_name = name+'-master'
         print('\nAdding node {0} to network {1} \n'.format(node_name, name))
         server=nova.servers.create(
@@ -106,14 +108,12 @@ if __name__=='__main__':
         token = uuid.uuid4().hex[0:6]+'.'+uuid.uuid4().hex[0:16]
         os.system('ssh-keygen -R {}'.format(master_public))
         #os.system('ssh-keyscan -H {} >> ~/.ssh/known_hosts'.format(master_public))
-        inventory.create_inventory(
-                m_public=master_public, 
-                m_local=master_local, 
-                m_name=master_name, 
-                key='k_keys.key', 
-                token=token)
 
+    all_nodes = None
     if args.add_node:
+        inventory_dict['node_basics'] = 'true'
+        inventory_dict['kube_join'] = 'true'
+        all_nodes = []
         for j in range(1,args.multiple+1):
             suf = '' if args.multiple==1 else '-'+str(j)
             if args.node_name is not None:
@@ -138,10 +138,24 @@ if __name__=='__main__':
                     nova = init_nova()
                     server = nova.servers.find(name=node_name)
                     print(server.networks[name])
+                    all_nodes.append([str(server.networks[name][0]),str(node_name)])
                     break
                 except:
                     continue
 
+    if not args.master:
+        master_local  = ''
+        master_public = ''
+        master_name = ''
+        token = ''
+    inventory.create_inventory(
+            m_public=master_public, 
+            m_local=master_local, 
+            m_name=master_name, 
+            key='k_keys.key', 
+            token=token,
+            nodes=all_nodes,
+            **inventory_dict)
 
         
 

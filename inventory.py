@@ -11,7 +11,7 @@ def create_inventory(m_public='', m_local='', m_name='', key='', token='', nodes
     master_public = m_public
     master_local = m_local
     master_name = m_name
-    configfile = 'test.conf'
+    configfile = 'inventory.conf'
     
     config = configparser.RawConfigParser(allow_no_value=True)
     check = config.read(configfile)
@@ -35,9 +35,11 @@ def create_inventory(m_public='', m_local='', m_name='', key='', token='', nodes
 ))
     
     if not config.has_section('slaves'):
+        config.remove_section('slaves')
+    if not config.has_section('slaves'):
         config.add_section('slaves')
     if nodes is not None:
-        for node in nodes: config.set('slaves', node[0])
+        for node in nodes: config.set('slaves', node[1])
     
     if not config.has_section('all:vars'):
         config.add_section('all:vars')
