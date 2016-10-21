@@ -6,7 +6,6 @@
   with_items: "{{ nodes }}"
 - name: Remove nknown_hosts
   file: path=/root/.ssh/known_hosts state=absent
-  with_items: "{{ nodes }}"
 - name: Add nodes to known_hosts for ssh
   raw: ssh-keyscan -H "{{ item.name }}"  | tee --append /root/.ssh/known_hosts
   with_items: "{{ nodes }}"
