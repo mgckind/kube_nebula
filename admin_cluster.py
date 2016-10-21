@@ -28,6 +28,7 @@ if __name__=='__main__':
     args = parser.parse_args()
     nova = init_nova()
     name = args.network
+    delete_key = False
 
     with open('config_nodes.yml') as f:
         config_nodes = yaml.load(f)
@@ -37,11 +38,13 @@ if __name__=='__main__':
 
     if not os.path.exists(key_root+'.key'):
         os.system("ssh-keygen -f {} -t rsa -N ''".format(key_root+'.key'))
+        delete_key = True
     
     try:
         k = nova.keypairs.find(name=key_root)
-        #k.delete()
-        #print('deleting key')
+        if delete_key:
+            k.delete()
+            print('deleting key')
     except:
         print('creating a new key')
         with open(key_root+'.key.pub','r') as f: pub=f.read()
