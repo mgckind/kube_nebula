@@ -1,11 +1,12 @@
 ---
 master:
-  image: "Ubuntu 16.04"
-  flavor: "m1.medium"
-  security: 'kubenet_sec'
-  key: "mykey"
+  image: "kube_ubuntu"
+  #image: "Ubuntu 16.04"
+  flavor: "m1.large"
+  security: "kubenet_sec"
+  key: "mykey2"
 
 nodes:
-  image: "Ubuntu 16.04"
-  flavor: "m1.medium"
-  security: 'kubenet_sec'
+  image: "kube_ubuntu"
+  flavor: "m1.large"
+  security: "kubenet_sec"

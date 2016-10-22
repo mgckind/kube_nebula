@@ -8,9 +8,9 @@ except ImportError:
 
 
 def create_inventory(m_public='', m_local='', m_name='', key='', token='', nodes=None, **kwargs):
-    master_public = m_public
-    master_local = m_local
-    master_name = m_name
+    if m_public != '': master_public = m_public
+    if m_local  != '': master_local = m_local
+    if m_name   != '': master_name = m_name
     configfile = 'inventory.conf'
     
     config = configparser.RawConfigParser(allow_no_value=True)

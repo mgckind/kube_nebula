@@ -28,11 +28,13 @@ The file [config_nodes.yml](config_nodes.yml) has the initial configuration give
 
 #### Add nodes
 
-    python admin_cluster.py <my_net> --add-node --multiple <number>
+    python admin_cluster.py <my_net> --add-nodes <number_of_nodes>
+
+Use `--add-nodes` or `-an` to specify number of nodes, if flag is absent, no nodes will be added.If no number, the default is 1.
 
 #### All at once
     
-    python admin_cluster.py <my_net> --create-network --master --add-node --multiple <number>
+    python admin_cluster.py <my_net> --create-network --master --add-nodes <number>
 
 #### To run ansible using same script add --run-ansible or -run at the end, this will run the playbook on master
 
@@ -40,7 +42,7 @@ The file [config_nodes.yml](config_nodes.yml) has the initial configuration give
 
 #### To set up a cluster of 5 nodes in one command
 
-    python admin_cluster.py <my_net> --create-network --master --add-node --multiple 4 -run
+    python admin_cluster.py <my_net> --create-network --master --add-nodes 4 -run
 
 #### Custon names for the nodes
 By default the master will have the name <my_net>-master and the nodes will have <my_net>-<random>, you can specify the names for the node with the flag --node-name <custom-name>

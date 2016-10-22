@@ -16,8 +16,7 @@ import pbook
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Create Kubernetes cluster in Openstack')
     parser.add_argument('network', type=str, help="NETWORK name")
-    parser.add_argument('--add-node', '-an', dest='add_node', action='store_true', help="Add an extra node to the NETWORK")
-    parser.add_argument('--multiple', '-mn', dest='multiple', type=int, default=1, help="Number of nodes (default:1)")
+    parser.add_argument('--add-nodes', '-an', dest='add_node', nargs='?', const=1, type=int, help="Add extra nodes to the network, default: 1 for no number, 0 for no flag ")
     parser.add_argument('--master', action='store_true', help="Creates a  node master with public ip")
     parser.add_argument('--node-name', '-nn', dest='node_name', type=str, default=None, help="Node name (default: random)")
     parser.add_argument('--create-network', dest='new_net', action='store_true', help="Create a new NETWORK")
@@ -57,9 +56,13 @@ if __name__=='__main__':
         C.get()
         if args.del_cl or args.del_net:
             if args.force:
-                os.remove('inventory.conf')
+                try:
+                    os.remove('inventory.conf')
+                except OSError:
+                    pass
                 for server in nova.servers.findall():
                     if server.interface_list()[0].net_id == net.id:
+                        print('Deleting {} ...'.format(server.human_id))
                         server.delete()
                         time.sleep(1)
                 if args.del_net:
@@ -97,6 +100,7 @@ if __name__=='__main__':
                 security_groups = [nova.security_groups.find(name=config_nodes['master']['security']).id],
                 nics = [{'net-id':net.id}],
                 min_count = 1,
+                availability_zone='nova'
                 )
         print(server.id)
         for i in range(20):
@@ -121,12 +125,12 @@ if __name__=='__main__':
         token = uuid.uuid4().hex[0:6]+'.'+uuid.uuid4().hex[0:16]
 
     all_nodes = None
-    if args.add_node:
+    if args.add_node is not None:
         inventory_dict['node_basics'] = 'true'
         inventory_dict['kube_join'] = 'true'
         all_nodes = []
-        for j in range(1,args.multiple+1):
-            suf = '' if args.multiple==1 else '-'+str(j)
+        for j in range(1,args.add_node+1):
+            suf = '' if args.add_node==1 else '-'+str(j)
             if args.node_name is not None:
                 node_name = args.node_name+suf
             else:
@@ -141,6 +145,7 @@ if __name__=='__main__':
                 security_groups = [nova.security_groups.find(name=config_nodes['nodes']['security']).id],
                 nics = [{'net-id':net.id}],
                 min_count = 1,
+                availability_zone='nova'
                     )
             print(server.id)
             for i in range(20):
