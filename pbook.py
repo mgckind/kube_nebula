@@ -24,9 +24,9 @@ def run_playbook():
         if check == 0:
             os.system('ssh-keyscan -H {} >> ~/.ssh/known_hosts'.format(master_public))
             break
-        if check != 0:
-            print('\nHostname {} is not up!\n'.format(master_public))
-            sys.exit()
+    if check != 0:
+        print('\nHostname {} is not up!\n'.format(master_public))
+        sys.exit()
 
     
     variable_manager = VariableManager()
