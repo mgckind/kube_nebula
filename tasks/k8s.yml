@@ -5,8 +5,6 @@
   git: repo=https://github.com/kubernetes/heapster.git dest=/home/ubuntu/heapster clone=yes update=no
 - name: Start heapster
   command: /usr/bin/kubectl apply -f /home/ubuntu/heapster/deploy/kube-config/influxdb
-- name: Start dashboard
-  command: /usr/bin/kubectl create -f /home/ubuntu/dashboard/src/deploy/kubernetes-dashboard.yaml
 - name: Clone dashboard repo
   git: repo=https://github.com/kubernetes/dashboard.git dest=/home/ubuntu/dashboard clone=yes update=no
 - name: Start dashboard
