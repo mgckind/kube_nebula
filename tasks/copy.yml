@@ -5,5 +5,7 @@
   copy: src={{ key }} dest=/home/ubuntu/mykube/ mode=600
 - name: Copy slave.yml
   copy: src=slave.yml dest=/home/ubuntu/mykube/
+- name: Copy ansible.cfg
+  copy: src=ansible.cfg dest=/home/ubuntu/mykube/
 - name: Copy tasks
   copy: src=tasks/ dest=/home/ubuntu/mykube/tasks/

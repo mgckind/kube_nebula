@@ -174,6 +174,8 @@ if __name__=='__main__':
             **inventory_dict)
 
     if args.run_ansible:
+        if not args.master:
+            time.sleep(30) # give some time to set up the noes
         res = pbook.run_playbook()
         if res == 0:
             inventory.update_inventory()

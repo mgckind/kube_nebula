@@ -45,7 +45,14 @@ Use `--add-nodes` or `-an` to specify number of nodes, if flag is absent, no nod
     python admin_cluster.py <my_net> --create-network --master --add-nodes 4 -run
 
 #### Custon names for the nodes
-By default the master will have the name <my_net>-master and the nodes will have <my_net>-<random>, you can specify the names for the node with the flag --node-name <custom-name>
+By default the master will have the name <my_net>-master and the nodes will have <my_net>-<random>, you can specify the names for the node with the flag `--node-name` or `-nn` <custom-name>
+
+### Adding nodes after cluster is created
+
+You can create instances which automatically will be add to the kubernetes cluster
+
+    python admin_cluster.py <my_net> --add-nodes <number_of_nodes> 
+    python admin_cluster.py <my_net> -run
 
 #### Delete cluster in network
     
