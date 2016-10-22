@@ -29,12 +29,7 @@
 # Ansible from Master
     - name: Run Ansible from master
       command: chdir=/home/ubuntu/mykube  /usr/bin/ansible-playbook -i inventory.conf  --key-file="{{ key }}" slave.yml
-    - name: Run pod network
-      command: /usr/bin/kubectl apply -f https://git.io/weave-kube
-      when: "{{ kube_basics }}"
-    - name: Clone dashboard repo
-      git: repo=https://github.com/kubernetes/dashboard.git dest=/home/ubuntu/dashboard clone=yes update=no
-      when: "{{ kube_basics }}"
-    - name: Start dashboard
-      command: /usr/bin/kubectl create -f /home/ubuntu/dashboard/src/deploy/kubernetes-dashboard.yaml
+# Kubernetes basics pods
+    - name: Install kubernetes basics (network pod, heapster, dashboard)
+      include: tasks/k8s.yml
       when: "{{ kube_basics }}"
