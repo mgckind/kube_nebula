@@ -4,7 +4,7 @@ master:
   image: "Ubuntu 16.04"
   flavor: "m1.large"
   security: "kubenet_sec"
-  key: "mykey2"
+  key: "key_mck"
 
 nodes:
   image: "Ubuntu 16.04"
