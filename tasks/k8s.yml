@@ -6,7 +6,7 @@
 - name: Start heapster
   command: /usr/bin/kubectl apply -f /home/ubuntu/heapster/deploy/kube-config/influxdb
 - name: Wait for Heapster
-  wait_for: host=0.0.0.0 delay=30
+  wait_for: host=127.0.0.1 delay=30
 - name: Clone dashboard repo
   git: repo=https://github.com/kubernetes/dashboard.git dest=/home/ubuntu/dashboard clone=yes update=no
 - name: Start dashboard
