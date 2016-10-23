@@ -27,9 +27,9 @@
       include: tasks/stop_kube.yml
       when: "{{ kube_stop }}"
 # Ansible from Master
-    - name: Wait for servers
-      wait_for: host={{ item.ip }}
-      with_items: "{{ nodes }}"
+    #- name: Wait for servers
+    #  wait_for: host={{ item.ip }}
+    #  with_items: "{{ nodes }}"
     - name: Run Ansible from master
       command: chdir=/home/ubuntu/mykube  /usr/bin/ansible-playbook -i inventory.conf  --key-file="{{ key }}" slave.yml
 # Kubernetes basics pods
