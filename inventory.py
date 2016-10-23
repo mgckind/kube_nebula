@@ -60,6 +60,7 @@ def create_inventory(m_public='', m_local='', m_name='', key='', token='', nodes
     
     with open(configfile,'w') as f:
         config.write(f)
+        f.flush()
 
 
 def get_master_ip():
@@ -84,6 +85,7 @@ def update_inventory():
     config.set('all:vars', 'master_basics', 'false')
     with open(configfile,'w') as f:
         config.write(f)
+        f.flush()
     return
 
 

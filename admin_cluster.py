@@ -175,7 +175,7 @@ if __name__=='__main__':
 
     if args.run_ansible:
         if not args.master:
-            time.sleep(30) # give some time to set up the noes
+            time.sleep(30) # give some time to set up the nodes
         res = pbook.run_playbook()
         if res == 0:
             inventory.update_inventory()
