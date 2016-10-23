@@ -49,7 +49,7 @@ By default the master will have the name <my_net>-master and the nodes will have
 
 ### Adding nodes after cluster is created
 
-You can create instances which automatically will be add to the kubernetes cluster
+You can create instances which automatically will be add to the kubernetes cluster (2 steps)
 
     python admin_cluster.py <my_net> --add-nodes <number_of_nodes> 
     python admin_cluster.py <my_net> -run
