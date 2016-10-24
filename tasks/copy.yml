@@ -9,3 +9,5 @@
   copy: src=ansible.cfg dest=/home/ubuntu/mykube/
 - name: Copy tasks
   copy: src=tasks/ dest=/home/ubuntu/mykube/tasks/
+- name: Copy k8s files
+  copy: src=k8s/ dest=/home/ubuntu/mykube/k8s/

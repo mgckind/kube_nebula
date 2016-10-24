@@ -7,7 +7,12 @@
   command: /usr/bin/kubectl apply -f /home/ubuntu/heapster/deploy/kube-config/influxdb
 - name: Wait for Heapster
   wait_for: host=127.0.0.1 delay=30
-- name: Clone dashboard repo
-  git: repo=https://github.com/kubernetes/dashboard.git dest=/home/ubuntu/dashboard clone=yes update=no
+#- name: Clone dashboard repo
+#  git: repo=https://github.com/kubernetes/dashboard.git dest=/home/ubuntu/dashboard clone=yes update=no
 - name: Start dashboard
-  command: /usr/bin/kubectl create -f /home/ubuntu/dashboard/src/deploy/kubernetes-dashboard.yaml
+  command: /usr/bin/kubectl create -f /home/ubuntu/mykube/k8s/kubernetes-dashboard.yaml
+- name: Wair for dashboard
+  wait_for: host=127.0.0.1 delay=30
+- name: Start WeaveScope
+  command: /usr/bin/kubectl apply -f /home/ubuntu/mykube/k8s/weavescope.yaml
+

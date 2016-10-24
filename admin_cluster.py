@@ -23,6 +23,7 @@ if __name__=='__main__':
     parser.add_argument('--delete-network', dest='del_net', action='store_true', help="Delete a NETWORK")
     parser.add_argument('--delete-cluster', dest='del_cl', action='store_true', help="Delete a cluster inside NETWORK")
     parser.add_argument('--run-ansible','-run', dest='run_ansible', action='store_true', help="Run Ansible playbook on master node")
+    parser.add_argument('--stop-kube', dest='stop_kube', action='store_true', help="Stop kubernetes on all nodes and remove all related files, it needs -run")
     parser.add_argument('--force', action='store_true', help="Force delete")
     args = parser.parse_args()
     nova = init_nova()
@@ -82,6 +83,8 @@ if __name__=='__main__':
     net = nova.networks.find(label=name)
     
     inventory_dict = {'kube_stop' : 'false'}
+    if args.stop_kube:
+        inventory_dict = {'kube_stop' : 'true'}
     if args.master:
         try:
             ip = nova.floating_ips.findall(instance_id=None)[0]
@@ -179,6 +182,11 @@ if __name__=='__main__':
         res = pbook.run_playbook()
         if res == 0:
             inventory.update_inventory()
+        if args.master:
+            print()
+            print('\n Dashboard at : http://{}:30080 \n'.format(master_public))
+            print('\n Weavescope at : http://{}:30090 \n'.format(master_public))
+
 
         
 
