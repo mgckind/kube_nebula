@@ -1,6 +1,10 @@
 ## Kubernetes in OpenStack
 Simple commands to install and control a kuberneter cluster in Openstack
 
+### WARNING NOTE :warning: :warning:
+
+Be carefully when running these scripts, make sure you understand what you are doing and make sure to check current network environments (in OpenStack) to avoid deleting other people instances, this is espscially true when deleting the cluster: **Do not use a exiting network name. Make sure to check network topology**
+
 
 ### Requirements
 
