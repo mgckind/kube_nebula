@@ -202,10 +202,9 @@ if __name__=='__main__':
         res = pbook.run_playbook()
         if res == 0:
             inventory.update_inventory()
-        if args.master:
-            print()
-            print('\n Dashboard at : http://{}:30080 \n'.format(master_public))
-            print('\n Weavescope at : http://{}:30090 \n'.format(master_public))
+        print()
+        print('\n Dashboard at : http://{}:30080 \n'.format(master_public))
+        print('\n Weavescope at : http://{}:30090 \n'.format(master_public))
 
 
         

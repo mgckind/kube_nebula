@@ -1,4 +1,10 @@
 ---
+- name: Create mounting point
+  raw: mkdir -p "{{ nfspath }}"
+- name: Mount volume
+  raw: mount /dev/vdb "{{ nfspath }}"
+- name: Change permissions
+  raw: chown -R nobody:nogroup "{{ nfspath }}"
 - name: Update /etc/exports
   lineinfile: dest=/etc/exports line="{{ nfspath }} {{ item.ip }}(rw,sync,no_subtree_check)" 
   with_items: "{{ nodes }}"
