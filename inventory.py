@@ -12,7 +12,6 @@ def create_inventory(m_public='', m_local='', m_name='', key='', token='', nodes
     if m_local  != '': master_local = m_local
     if m_name   != '': master_name = m_name
     configfile = 'inventory.conf'
-    
     config = configparser.RawConfigParser(allow_no_value=True)
     check = config.read(configfile)
     if check == []:

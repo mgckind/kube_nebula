@@ -12,6 +12,13 @@ from ostack import *
 import inventory
 import yaml
 import pbook
+try:
+    from builtins import input, range
+    import configparser
+except ImportError:
+    from __builtin__ import input, range
+    import ConfigParser as configparser
+
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Create Kubernetes cluster in Openstack')
@@ -56,6 +63,16 @@ if __name__=='__main__':
         net = nova.networks.find(label=name)
         C.get()
         if args.del_cl or args.del_net:
+            nodes_todel = ['{}-master'.format(name)]
+            configfile = 'inventory.conf'
+            config = configparser.RawConfigParser(allow_no_value=True)
+            check = config.read(configfile)
+            if config.has_section('slaves-done'):
+                for item in config.items('slaves-done'):
+                    nodes_todel.append(item[0])
+            if config.has_section('slaves'):
+                for item in config.items('slaves'):
+                    nodes_todel.append(item[0])
             if args.force:
                 try:
                     os.remove('inventory.conf')
@@ -63,10 +80,10 @@ if __name__=='__main__':
                     pass
                 for server in nova.servers.findall():
                     if server.interface_list()[0].net_id == net.id:
-                        #print('Deleting {} ...'.format(server.human_id))
-                        print('Deleting {} needs to be done manually'.format(server.human_id))
-                        #server.delete()
-                        time.sleep(1)
+                        if server.human_id in nodes_todel:
+                            print('Deleting {} ...'.format(server.human_id))
+                            server.delete()
+                            time.sleep(1)
                 if args.del_net:
                     #C.delete()
                     #print('\nNetwork {} was deleted\n'.format(name))
