@@ -14,6 +14,8 @@
 - name: Install kubadm and related packages
   apt: pkg={{ item }} state=installed
   with_items:
+     - nfs-kernel-server
+     - nfs-common
      - ansible
      - docker.io
      - kubelet 

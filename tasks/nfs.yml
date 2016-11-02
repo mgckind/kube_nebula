@@ -1,0 +1,6 @@
+---
+- name: Update /etc/exports
+  lineinfile: dest=/etc/exports line="{{ nfspath }} {{ item.ip }}(rw,sync,no_subtree_check)" 
+  with_items: "{{ nodes }}"
+- name: Start NFS
+  service: name=nfs-kernel-server state=restarted

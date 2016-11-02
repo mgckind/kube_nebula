@@ -1,0 +1,9 @@
+---
+- name: Install pip
+  raw:  apt install -y python-pip
+- name: Install nova packages
+  raw: pip install python-novaclient
+- name: Install cinder client
+  raw: pip install python-cinderclient
+- name: Install openstack client
+  raw: pip install python-openstackclient
