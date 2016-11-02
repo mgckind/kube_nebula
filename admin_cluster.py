@@ -63,15 +63,17 @@ if __name__=='__main__':
                     pass
                 for server in nova.servers.findall():
                     if server.interface_list()[0].net_id == net.id:
-                        print('Deleting {} ...'.format(server.human_id))
-                        server.delete()
+                        #print('Deleting {} ...'.format(server.human_id))
+                        print('Deleting {} needs to be done manually'.format(server.human_id))
+                        #server.delete()
                         time.sleep(1)
                 if args.del_net:
                     C.delete()
-                    print('\nNetwork {} was deleted\n'.format(name))
+                    #print('\nNetwork {} was deleted\n'.format(name))
+                    print('\nNetwork {} needs to be deleted manually\n'.format(name))
                 os._exit(0)
             else:
-                print('\n Add --force, extra security\n')
+                print('\n Add --force, extra security. ARE YOU SURE YOU WANT TO DELETE THE NETWORK %s and ALL the instances??!!\n' % name)
                 os._exit(0)
     except:
         if not args.new_net:
