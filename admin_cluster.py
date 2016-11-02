@@ -68,7 +68,7 @@ if __name__=='__main__':
                         #server.delete()
                         time.sleep(1)
                 if args.del_net:
-                    C.delete()
+                    #C.delete()
                     #print('\nNetwork {} was deleted\n'.format(name))
                     print('\nNetwork {} needs to be deleted manually\n'.format(name))
                 os._exit(0)
