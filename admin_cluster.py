@@ -112,6 +112,7 @@ if __name__=='__main__':
         inventory_dict['master_basics'] = 'true'
         inventory_dict['kube_init'] = 'true'
         inventory_dict['kube_basics'] = 'true'
+        inventory_dict['nfs'] = 'false'
         node_name = name+'-master'
         print('\nAdding node {0} to network {1} \n'.format(node_name, name))
         server=nova.servers.create(

@@ -36,3 +36,7 @@
     - name: Install kubernetes basics (network pod, heapster, dashboard)
       include: tasks/k8s.yml
       when: "{{ kube_basics }}"
+# Start NFS on master (need to attach and mount cinder block first)
+    - name: Starts NFS on master
+      include: tasks/nfs.yml
+      when: "{{ nfs }}"

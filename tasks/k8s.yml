@@ -11,7 +11,7 @@
 #  git: repo=https://github.com/kubernetes/dashboard.git dest=/home/ubuntu/dashboard clone=yes update=no
 - name: Start dashboard
   command: /usr/bin/kubectl create -f /home/ubuntu/mykube/k8s/kubernetes-dashboard.yaml
-- name: Wair for dashboard
+- name: Wait for dashboard
   wait_for: host=127.0.0.1 delay=30
 - name: Start WeaveScope
   command: /usr/bin/kubectl apply -f /home/ubuntu/mykube/k8s/weavescope.yaml
