@@ -31,12 +31,12 @@ items:
     apiVersion: v1
     kind: Service
     spec:
-      #type: NodePort
+      type: NodePort
       ports:
         - name: app
           port: 80
           targetPort: 4040
-          #nodePort: 30090
+          nodePort: 30090
           protocol: TCP
       selector:
         app: weavescope

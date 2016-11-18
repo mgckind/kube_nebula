@@ -14,7 +14,7 @@
       service: name=kubelet state=started
       when: "{{ kube_join }}"
     - name: Run kubeadm join
-      command: /usr/bin/kubeadm join --token "{{ token }}" "{{ master_ip }}" 
+      command: /usr/bin/kubeadm join --skip-preflight-checks --token "{{ token }}" "{{ master_ip }}" 
       when: "{{ kube_join }}"
 # Stop Kubernetes
     - name: Stop Kubernetes 
