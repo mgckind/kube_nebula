@@ -1,0 +1,31 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: read-nodes-global
+subjects:
+- kind: User
+  name: matias
+  apiGroup: rbac.authorization.k8s.io
+- kind: User
+  name: adam
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: node-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: pv-global
+subjects:
+- kind: User
+  name: matias
+  apiGroup: rbac.authorization.k8s.io
+- kind: User
+  name: adam
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: system:persistent-volume-provisioner
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,16 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: developer-binding
+  namespace: sqre
+subjects:
+- kind: User
+  name: matias
+  apiGroup: ""
+- kind: User
+  name: adam
+  apiGroup: ""
+roleRef:
+  kind: Role
+  name: developer-all
+  apiGroup: ""

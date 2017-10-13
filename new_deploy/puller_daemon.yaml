@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: test
+spec:
+  template:
+    metadata:
+      labels:
+        run-once-daemonset: test
+    spec:
+      containers:
+      - name: test
+        image: {test image}
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+          - 'while true; do sleep 1; done'
+        

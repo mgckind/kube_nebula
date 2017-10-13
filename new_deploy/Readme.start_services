@@ -1,0 +1,15 @@
+- Label master: kubectl label node <master-node> nodetype=master
+- Helm
+  - helm init
+  - kubectl apply -f helm/helm.yaml (Helm roles)
+- Ingress
+  - see Readme inside ingress/  
+- Storage
+  - see Readme inside storage
+- Users
+  - run python create_k8s_user.py {user}
+  - fix the .kube/config
+- Roles
+  - see inside roles/
+- Monitor
+- Heapster

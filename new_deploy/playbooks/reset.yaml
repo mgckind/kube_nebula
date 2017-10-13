@@ -1,0 +1,11 @@
+---
+- hosts: nodes
+  tasks:
+    - name: Remove node
+      become: yes
+      become_method: sudo
+      command: sudo kubeadm reset
+    - name: Restart kubelet
+      become: yes
+      become_method: sudo
+      command: sudo service kubelet stop

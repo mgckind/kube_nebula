@@ -1,0 +1,7 @@
+---
+- hosts: all
+  tasks:
+    - name: change hostname
+      become: yes
+      become_method: sudo
+      command: sudo hostnamectl set-hostname {{ ansible_hostname }}

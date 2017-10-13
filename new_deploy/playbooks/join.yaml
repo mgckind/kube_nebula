@@ -1,0 +1,8 @@
+---
+- hosts: nodes
+  tasks:
+    - name: Join node
+      become: yes
+      become_method: sudo
+      command: sudo kubeadm join --token {TOKEN}
+

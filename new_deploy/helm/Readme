@@ -1,0 +1,5 @@
+https://github.com/kubernetes/helm/issues/2687
+http://jayunit100.blogspot.com/2017/07/helm-on.html
+#kubectl delete deployment tiller-deploy --namespace=kube-system ; kubectl delete service tiller-deploy --namespace=kube-system ; rm -rf ~/.helm/
+#helm-exec init --service-account helm
+

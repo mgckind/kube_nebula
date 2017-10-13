@@ -1,0 +1,15 @@
+---
+- hosts: nodes
+  tasks:
+    - name: Yum update
+      command: sudo yum update -y 
+    - name: Copy install file
+      copy: src=~/k8s_install/playbooks/prepare.sh dest=~/prepare.sh
+    - name: Run install
+      become: yes
+      become_method: sudo
+      command: sudo sh /home/centos/prepare.sh
+    - name: Remove install
+      become: yes
+      become_method: sudo
+      command: sudo rm /home/centos/prepare.sh

@@ -1,0 +1,57 @@
+# on Master:
+ - sudo yum install -y vim git epel-release ansible bash-completion bash-completion-extras emacs python34 cronie
+ - list_ip should have a list with hostnames and ips <hostname> <ip> 
+ - python write_host.py
+ - update /etc/hosts/ and /etc/ansible/hosts
+ - add private_key to /etc/ansible/ansible.cfg --> This is important first time creation
+ This is done by write_host.py
+ 	- copy key to .ssh/
+ 	- for host in $(cat hosts.txt); do ssh-copy-id -i .ssh/cloud.key $host; done
+ - Run ping playbook (ansible-playbook playbooks/ping.yaml)
+ - Run hostame playbook (ansible-playbook playbooks/hostame.yaml)
+ - Run prepare playbook (ansible-playbook playbooks/prepare.yaml) --> will yum update, install docker, kubelet, and prepare nodes
+ - echo "source <(kubectl completion bash)" >> ~/.bashrc
+ - sudo kubeadm init (there are some config needed for network overlay, for weave this is enough)
+ - copy /etc/kubernetes/admin.conf to ~/.kube/config (add set up permissions)
+ - copy token into playbooks/join.yaml 
+ - Run join playbook (ansible-playbook playbooks/join.yaml) --> will join nodes
+ - Install network pod
+   Weave:  kubectl apply -n kube-system -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+# Adding new nodes
+- add new nodes nebula
+- add names and ips to list_ip_new
+- run write_hots.py
+- update /etc/hosts and /etc/ansible/hosts
+- run playbooks (modify hotst using [new] )
+  - ping.yaml 
+  - prepare.yanl
+  - install.yaml
+  - hostname.yaml
+  - join.yaml
+- cat list_ip_new >> list_ip
+- update /etc/ansible/hosts (move new --> nodes)
+# Removing nodes
+- drain node (kubectl drain node)
+- delete nodes (kubectl dele node)
+- update /etc/ansible/hosts
+- update /etc/hosts
+- update list_ip
+- remove from nebula
+
+# DELETE Cluster
+- kubectl delete nodes --all
+- sudo kubeadm reset (on master and all nodes)
+- sudo yum remove -y kubelet kubectl
+
+#LABELS
+kubectl label node <master> nodetype=master
+
+## USERS (check users folder) 
+ - change ssh rules to add user
+    - modify /etc/ssh/sshd_config
+     PasswordAuthentication yes
+    - sudo service sshd restart
+ - add user:
+   useradd -m <user>
+   passwd <user>

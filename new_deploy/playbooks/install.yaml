@@ -1,0 +1,9 @@
+---
+- hosts: nodes
+  tasks:
+    - name: Install epel-release
+      command:  sudo yum install -y epel-release
+    - name: Install python3
+      command: sudo yum install -y python34
+    - name: Install cronie
+      command: sudo yum install -y cronie

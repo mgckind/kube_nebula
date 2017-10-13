@@ -1,0 +1,10 @@
+- create roles for sqre
+   kubectl create -f role-all.yaml
+- create cluster-role
+   kubectl create -f cluster-role-developer.yaml
+- bind role to sqre users
+   kubectl apply -f rolebinding-developer.yaml
+- bind cluster-role to sqre users
+   kubectl apply -f cluster-rolebinding-developer.yaml
+- create Service Account Roles
+   kubectl apply -f role-sa-pods.yaml
